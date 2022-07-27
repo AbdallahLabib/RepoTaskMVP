@@ -1,2 +1,23 @@
 # RepoTaskMVP
- 
+
+Target: Retrieve public GitHub repositories .. 
+
+Features:
+
+    1. MVP architecture
+    2. Fetch data using URLSession and closures
+
+Current state of the project:
+
+    1. Finished tasks:
+    - Project is separated into layers usning MVP
+    - Table view is created
+    - Fetch data using URLSession and closures
+
+    2. Issue:
+     - 
+
+    3. Missing Features:
+    - Cache images
+    - Search bar
+    - Details screen
