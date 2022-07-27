@@ -15,7 +15,7 @@ Current state of the project:
     - Fetch data using URLSession and closures
 
     2. Issue:
-     - 
+     
 
     3. Missing Features:
     - Cache images
