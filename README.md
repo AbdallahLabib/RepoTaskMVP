@@ -13,9 +13,10 @@ Current state of the project:
     - Project is separated into layers usning MVP
     - Table view is created
     - Fetch data using URLSession and closures
+    - Unit testing
 
     2. Issue:
-     
+     None
 
     3. Missing Features:
     - Cache images
