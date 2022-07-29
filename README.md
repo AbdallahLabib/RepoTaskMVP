@@ -6,6 +6,7 @@ Features:
 
     1. MVP architecture
     2. Fetch data using URLSession and closures
+    3. Xib file
 
 Current state of the project:
 
