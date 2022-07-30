@@ -15,11 +15,11 @@ Current state of the project:
     - Table view is created
     - Fetch data using URLSession and closures
     - Unit testing
+    - Cache images
 
     2. Issue:
      None
 
     3. Missing Features:
-    - Cache images
     - Search bar
     - Details screen
