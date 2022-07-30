@@ -12,7 +12,6 @@ protocol RepositoryView: AnyObject {
 }
 
 class RepositoriesViewController: UIViewController {
-    
     //MARK: - Outlets
     @IBOutlet weak var repositoriesTableView: UITableView!
     
@@ -22,9 +21,9 @@ class RepositoriesViewController: UIViewController {
     //MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        presenter = RepositoriesPresenter(self)
+        presenter = RepositoriesPresenter(self, apiService: APIService.sharedService)
         configureTableView()
-        presenter.getRepositories()
+        presenter.fetchRepositories()
         self.title = "Repositories"
     }
     
@@ -32,42 +31,36 @@ class RepositoriesViewController: UIViewController {
     private func configureTableView() {
         repositoriesTableView.dataSource = self
         repositoriesTableView.delegate = self
-        repositoriesTableView.register(UINib(nibName: String(describing: RepositoryCell.self), bundle: nil), forCellReuseIdentifier: RepositoryCell.identifier)
+        repositoriesTableView.register(UINib(nibName: RepositoryCell.identifier, bundle: nil),
+                                       forCellReuseIdentifier: RepositoryCell.identifier)
     }
-    
-    
 }
 
 //MARK: - TableView DataSource
-extension RepositoriesViewController: UITableViewDataSource, UITableViewDelegate {
+extension RepositoriesViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        presenter.returnRepositoriesCount()
+        presenter.repositoriesCount()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        guard let cell = repositoriesTableView.dequeueReusableCell(withIdentifier: RepositoryCell.identifier, for: indexPath) as? RepositoryCell else {return UITableViewCell()}
-        
-        cell.configureCell(with: presenter.getUsedRepository(at: indexPath.row))
-        
+        let cell = repositoriesTableView.dequeueReusableCell(withIdentifier: RepositoryCell.identifier,
+                                                             for: indexPath) as! RepositoryCell
+        let repository = presenter.repository(at: indexPath.row)
+        cell.configureCell(with: repository)
         return cell
     }
-    
-    
+}
+
+//MARK: - TableView Delegate
+extension RepositoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         presenter.willDisplayRepository(at: indexPath.row)
     }
-    
-    
 }
 
-//MARK: - View Extension
+//MARK: - View Protocol
 extension RepositoriesViewController: RepositoryView {
     func reloadRepositoriesTableView() {
-        DispatchQueue.main.async { [weak self] in
-            self?.repositoriesTableView.reloadData()
-        }
+        repositoriesTableView.reloadData()
     }
-    
-    
 }

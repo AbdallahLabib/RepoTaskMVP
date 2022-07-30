@@ -6,37 +6,41 @@
 //
 
 import Foundation
-class APIService {
-    
+
+protocol APIServicing {
+    func getRepositories(completion: @escaping(_ repositories: [Repository]?, _ error: Error?) -> Void)
+}
+
+final class APIService: APIServicing {
     static let sharedService = APIService()
+    private init() {}
     
-    func getRepositories(completion: @escaping(_ repositories: [Repository]?, _ error: Error? ) -> Void) {
+    // TODO: Use Result
+    func getRepositories(completion: @escaping(_ repositories: [Repository]?, _ error: Error?) -> Void) {
+        guard let url = URL(string: "https://api.github.com/repositories") else { return }
         
-        guard let url = URL(string: "https://api.github.com/repositories") else {return}
-        
-        let session = URLSession.shared
         let request = URLRequest(url: url)
-        let task = session.dataTask(with: request) { data, response, error in
-            
-            guard error == nil else {return}
-            
+        URLSession.shared.dataTask(with: request) { data, _, error in
             guard let data = data else {
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
                 return
             }
             
             do {
-                let decoder = JSONDecoder()
-                let response = try decoder.decode([Repository].self, from: data)
+                let response = try JSONDecoder().decode([Repository].self, from: data)
                 debugPrint(response)
-                completion(response, nil)
-                
-            }
-            catch {
+                print("ThreadM", #function, Thread.isMainThread)
+                DispatchQueue.main.async {
+                    completion(response, nil)
+                }
+            } catch {
                 debugPrint(error.localizedDescription)
-                completion(nil, error)
+                DispatchQueue.main.async {
+                    completion(nil, error)
+                }
             }
-
-        }
-        task.resume()
+        }.resume()
     }
 }

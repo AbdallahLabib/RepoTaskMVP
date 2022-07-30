@@ -11,7 +11,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
 
-
+/*
+    No Storyboard:
+        - Init Window
+        - Key and Visible
+ 
+    Storyboard:
+        - Set root VC programmatically
+        - Storyboard inits the window
+        - Storyboard Key and visible
+ */
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.

@@ -7,22 +7,21 @@
 
 import Foundation
 
-
-struct Repository: Codable {
+struct Repository: Decodable {
+    let repositoryName: String
+    let owner: Owner
     
-    let repositiryName: String?
-    let owner: Owner?
     enum CodingKeys: String, CodingKey {
-        case repositiryName = "name"
+        case repositoryName = "name"
         case owner
     }
 }
 
-struct Owner: Codable {
-    let ownerImage: String?
+struct Owner: Decodable {
+    let imagePath: String
     
     enum CodingKeys: String, CodingKey {
-        case ownerImage = "avatar_url"
+        case imagePath = "avatar_url"
     }
     
 }

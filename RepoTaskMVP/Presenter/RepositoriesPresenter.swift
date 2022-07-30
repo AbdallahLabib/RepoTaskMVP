@@ -10,45 +10,43 @@ import Foundation
 class RepositoriesPresenter {
     
     //MARK: - Vars
-    var repositories: [Repository] = []
+    private var repositories: [Repository] = []
     private weak var view: RepositoryView?
+    private var apiService: APIServicing!
     
     //MARK: - Pagination vars
-    var repositoriesPerPages = 10
-    var limit = 10
-    var paginationRepositories: [Repository] = []
+    private var paginationRepositories: [Repository] = []
     
     //MARK: - Init
-    init(_ view: RepositoryView) {
+    init(_ view: RepositoryView, apiService: APIServicing) {
         self.view = view
+        self.apiService = apiService
     }
     
     //MARK: - Public funcs
-    func getRepositories() {
-        APIService.sharedService.getRepositories { (repositories: [Repository]?, error) in
-            
+    func fetchRepositories() {
+        apiService.getRepositories { [weak self] (repositories: [Repository]?, error) in
             guard let repositories = repositories else {
+                // TODO: Errors should be handled
+                print("Error:", error!.localizedDescription)
                 return
             }
-            self.repositories = repositories
-            self.limit = self.repositories.count
+            self?.repositories = repositories
             
             for i in 0..<10 {
-                self.paginationRepositories.append(repositories[i])
+                self?.paginationRepositories.append(repositories[i])
             }
-            DispatchQueue.main.async { [weak self] in
-                self?.view?.reloadRepositoriesTableView()
-            }
-            
+            print("ThreadM", #function, Thread.isMainThread)
+            self?.view?.reloadRepositoriesTableView()
         }
     }
     
-    func returnRepositoriesCount() -> Int {
-        return paginationRepositories.count
+    func repositoriesCount() -> Int {
+        paginationRepositories.count
     }
     
-    func getUsedRepository(at row: Int) -> Repository {
-        return paginationRepositories[row]
+    func repository(at row: Int) -> Repository {
+        paginationRepositories[row]
     }
     
     func willDisplayRepository(at row: Int) {
@@ -61,24 +59,17 @@ class RepositoriesPresenter {
 //MARK: - Private funcs
 extension RepositoriesPresenter {
     private func addNewRepositories() {
-        if repositoriesPerPages >= limit {
+        if paginationRepositories.count == repositories.count {
             return
-        }
-        else if repositoriesPerPages >= limit - 10 {
-            for i in repositoriesPerPages..<limit {
-                paginationRepositories.append(repositories[i])
+        } else if paginationRepositories.count >= repositories.count - 10 {
+            for index in paginationRepositories.count..<repositories.count {
+                paginationRepositories.append(repositories[index])
             }
-            self.repositoriesPerPages += 10
-        }
-        else {
-            for i in repositoriesPerPages..<repositoriesPerPages + 10 {
-                paginationRepositories.append(repositories[i])
+        } else {
+            for index in paginationRepositories.count..<paginationRepositories.count + 10 {
+                paginationRepositories.append(repositories[index])
             }
-            self.repositoriesPerPages += 10
         }
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.view?.reloadRepositoriesTableView()
-        }
+        view?.reloadRepositoriesTableView()
     }
 }
